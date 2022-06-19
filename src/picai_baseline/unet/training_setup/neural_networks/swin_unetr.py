@@ -86,7 +86,8 @@ class SwinUNETR(nn.Module):
 
         self.anisotropic = anisotropic
         if self.anisotropic:
-            self.patch_size = [(1, 2, 2), (1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
+            # nnUNet's anisotropic patch sizes for input of size (20, 160, 160)
+            self.patch_size = [(1, 2, 2), (1, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2)]
         else:
             self.patch_size = [ensure_tuple_rep(2, spatial_dims)]*5
 
