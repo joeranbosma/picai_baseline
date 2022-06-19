@@ -14,7 +14,7 @@
 
 from picai_baseline.unet.training_setup.neural_networks.unets import UNet
 
-from neural_networks.swin_unetr import SwinUNETR
+from training_setup.neural_networks.swin_unetr import SwinUNETR
 
 
 def neural_network_for_run(args, device):
@@ -45,6 +45,8 @@ def neural_network_for_run(args, device):
             # use_checkpoint: bool = False,
             # spatial_dims: int = 3,
         )
+    else:
+        raise ValueError(f"Unknown model type: {args.model_type}")
 
     model = model.to(device)
     print("Loaded Neural Network Arch.:", args.model_type)
