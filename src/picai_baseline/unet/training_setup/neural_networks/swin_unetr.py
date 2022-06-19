@@ -289,17 +289,17 @@ class SwinUNETR(nn.Module):
 
     def forward(self, x_in):
         hidden_states_out = self.swinViT(x_in, self.normalize)
-        enc0 = self.encoder1(x_in); print("enc0.shape", enc0.shape)
-        enc1 = self.encoder2(hidden_states_out[0]); print("enc1.shape", enc1.shape)
-        enc2 = self.encoder3(hidden_states_out[1]); print("enc2.shape", enc2.shape)
-        enc3 = self.encoder4(hidden_states_out[2]); print("enc3.shape", enc3.shape)
-        dec4 = self.encoder10(hidden_states_out[4]); print("dec4.shape", dec4.shape)
-        dec3 = self.decoder5(dec4, hidden_states_out[3]); print("dec3.shape", dec3.shape)
-        dec2 = self.decoder4(dec3, enc3); print("dec2.shape", dec2.shape)
-        dec1 = self.decoder3(dec2, enc2); print("dec1.shape", dec1.shape)
-        dec0 = self.decoder2(dec1, enc1); print("dec0.shape", dec0.shape)
-        out = self.decoder1(dec0, enc0); print("out.shape", out.shape)
-        logits = self.out(out); print("logits.shape", logits.shape)
+        enc0 = self.encoder1(x_in)
+        enc1 = self.encoder2(hidden_states_out[0])
+        enc2 = self.encoder3(hidden_states_out[1])
+        enc3 = self.encoder4(hidden_states_out[2])
+        dec4 = self.encoder10(hidden_states_out[4])
+        dec3 = self.decoder5(dec4, hidden_states_out[3])
+        dec2 = self.decoder4(dec3, enc3)
+        dec1 = self.decoder3(dec2, enc2)
+        dec0 = self.decoder2(dec1, enc1)
+        out = self.decoder1(dec0, enc0)
+        logits = self.out(out)
         return logits
 
 
