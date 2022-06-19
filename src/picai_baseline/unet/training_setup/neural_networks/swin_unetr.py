@@ -733,7 +733,6 @@ class PatchMerging(nn.Module):
             x3 = x[:, 1::2, 1::2, :]
             x = torch.cat([x0, x1, x2, x3], -1)
 
-        print("PatchMerge: ", x.shape)
         x = self.norm(x)
         x = self.reduction(x)
         return x
