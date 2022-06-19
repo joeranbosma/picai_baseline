@@ -76,7 +76,6 @@ else:
         archive_dir=mha_archive_dir,
         annotations_dir=annotations_dir,
         output_path=mha2nnunet_settings_path,
-        task=task
     )
 
     # read mha2nnunet_settings
@@ -84,6 +83,7 @@ else:
         mha2nnunet_settings = json.load(fp)
 
     # note: modify preprocessing settings here
+    mha2nnunet_settings["dataset_json"]["task"] = task
     mha2nnunet_settings["dataset_json"]["description"] = "bpMRI scans from PI-CAI dataset to train SwinUNETR"
     mha2nnunet_settings["preprocessing"]["matrix_size"] = [20, 256, 256]
     mha2nnunet_settings["preprocessing"]["spacing"] = [3.0, 0.5, 0.5]
