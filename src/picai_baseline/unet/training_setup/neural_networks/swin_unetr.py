@@ -700,21 +700,31 @@ class PatchMerging(nn.Module):
 
         x_shape = x.size()
         if len(x_shape) == 5:
-            b, d, h, w, c = x_shape
-            print("self.patch_size", self.patch_size)
-            dd, dh, dw = self.patch_size
-            pad_input = (h % dh == 1) or (w % dw == 1) or (d % dd == 1)
-            if pad_input:
-                x = F.pad(x, (0, 0, 0, d % dd, 0, w % dw, 0, h % dh))
-            x0 = x[:, 0::dd, 0::dh, 0::dw, :]
-            x1 = x[:, 1::dd, 0::dh, 0::dw, :]
-            x2 = x[:, 0::dd, 1::dh, 0::dw, :]
-            x3 = x[:, 0::dd, 0::dh, 1::dw, :]
-            x4 = x[:, 1::dd, 0::dh, 1::dw, :]
-            x5 = x[:, 0::dd, 1::dh, 0::dw, :]
-            x6 = x[:, 0::dd, 0::dh, 1::dw, :]
-            x7 = x[:, 1::dd, 1::dh, 1::dw, :]
-            x = torch.cat([x0, x1, x2, x3, x4, x5, x6, x7], -1)
+            if self.patch_size == (2, 2, 2):
+                b, d, h, w, c = x_shape
+                pad_input = (d % 2 == 1) or (h % 2 == 1) or (w % 2 == 1)
+                if pad_input:
+                    x = F.pad(x, (0, 0, 0, d % 2, 0, h % 2, 0, w % 2))
+                x0 = x[:, 0::2, 0::2, 0::2, :]
+                x1 = x[:, 1::2, 0::2, 0::2, :]
+                x2 = x[:, 0::2, 1::2, 0::2, :]
+                x3 = x[:, 0::2, 0::2, 1::2, :]
+                x4 = x[:, 1::2, 0::2, 1::2, :]
+                x5 = x[:, 0::2, 1::2, 0::2, :]
+                x6 = x[:, 0::2, 0::2, 1::2, :]
+                x7 = x[:, 1::2, 1::2, 1::2, :]
+                x = torch.cat([x0, x1, x2, x3, x4, x5, x6, x7], -1)
+            else:
+                assert self.patch_size == (1, 2, 3)
+                b, d, h, w, c = x_shape
+                pad_input = (w % 2 == 1) or (d % 2 == 1)
+                if pad_input:
+                    x = F.pad(x, (0, 0, 0, 0, 0, h % 2, 0, w % 2))
+                x0 = x[:, :, 0::2, 0::2, :]
+                x1 = x[:, :, 1::2, 0::2, :]
+                x2 = x[:, :, 0::2, 1::2, :]
+                x3 = x[:, :, 1::2, 1::2, :]
+                x = torch.cat([x0, x1, x2, x3], -1)
 
         elif len(x_shape) == 4:
             b, h, w, c = x_shape
