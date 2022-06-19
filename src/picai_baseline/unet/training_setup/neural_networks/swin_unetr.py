@@ -85,7 +85,7 @@ class SwinUNETR(nn.Module):
         window_size = ensure_tuple_rep(7, spatial_dims)
 
         if anisotropic:
-            patch_size = [(2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
+            patch_size = [(1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
         else:
             patch_size = ensure_tuple_rep(2, spatial_dims)
             for m, p in zip(img_size, patch_size):
