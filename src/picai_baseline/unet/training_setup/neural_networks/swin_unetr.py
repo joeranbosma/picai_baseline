@@ -88,7 +88,7 @@ class SwinUNETR(nn.Module):
         if self.anisotropic:
             self.patch_size = [(1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
         else:
-            self.patch_size = ensure_tuple_rep(2, spatial_dims)
+            self.patch_size = [ensure_tuple_rep(2, spatial_dims)]*5
             for m, p in zip(img_size, self.patch_size):
                 for i in range(5):
                     if m % np.power(p, i + 1) != 0:
