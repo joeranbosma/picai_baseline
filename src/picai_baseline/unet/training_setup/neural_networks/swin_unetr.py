@@ -126,7 +126,6 @@ class SwinUNETR(nn.Module):
             norm_layer=nn.LayerNorm,
             use_checkpoint=use_checkpoint,
             spatial_dims=spatial_dims,
-            anisotropic=anisotropic,
         )
 
         self.encoder1 = UnetrBasicBlock(
