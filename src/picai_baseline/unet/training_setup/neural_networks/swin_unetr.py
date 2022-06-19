@@ -686,15 +686,11 @@ class PatchMerging(nn.Module):
 
         super().__init__()
         self.dim = dim
-        if spatial_dims == 3:
-            self.reduction = nn.Linear(8 * dim, 2 * dim, bias=False)
-            self.norm = norm_layer(8 * dim)
-        elif spatial_dims == 2:
-            self.reduction = nn.Linear(4 * dim, 2 * dim, bias=False)
-            self.norm = norm_layer(4 * dim)
         if isinstance(patch_size, int):
             patch_size = ensure_tuple_rep(patch_size, spatial_dims)
         self.patch_size = patch_size
+        self.reduction = nn.Linear(np.prod(patch_size) * dim, 2 * dim, bias=False)
+        self.norm = norm_layer(np.prod(patch_size) * dim)
 
     def forward(self, x):
 
