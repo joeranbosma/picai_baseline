@@ -124,6 +124,7 @@ def main():
                     inputs = torch.from_numpy(batch_data['data']).to(device)
                 outputs = model(inputs)
                 print("outputs.shape", outputs.shape)
+                break
             exit()
 
         # loss function + optimizer
