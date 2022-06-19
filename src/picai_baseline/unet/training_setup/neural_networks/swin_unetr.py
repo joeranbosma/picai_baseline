@@ -954,6 +954,7 @@ class SwinTransformer(nn.Module):
                 norm_layer=norm_layer,
                 downsample=PatchMerging,
                 use_checkpoint=use_checkpoint,
+                patch_size=self.patch_size[i_layer + 1],
             )
             if i_layer == 0:
                 self.layers1.append(layer)
