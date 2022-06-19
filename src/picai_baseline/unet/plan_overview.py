@@ -20,8 +20,8 @@ import SimpleITK as sitk
 from picai_baseline.splits.picai_nnunet import nnunet_splits
 
 # specify paths to preprocessed data in nnU-Net Raw Data Archive
-preprocessed_data_path = Path('/workdir/nnUNet_raw_data/Task201_picai_swinunetr/')
-overviews_path = Path('/workdir/results/SwinUNETR/overviews/')
+preprocessed_data_path = Path('/workdir/nnUNet_raw_data/Task201_picai_swinunetr_anisotropic/')
+overviews_path = Path('/workdir/results/SwinUNETR4/overviews/')
 study_list_exclude = [
     "1001499"
 ]

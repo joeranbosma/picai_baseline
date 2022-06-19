@@ -39,7 +39,7 @@ else:
     workdir = Path("/workdir")
 
 # settings
-task = "Task201_picai_swinunetr"
+task = "Task201_picai_swinunetr_anisotropic"
 
 # paths
 mha_archive_dir = inputdir / "images"
@@ -85,7 +85,7 @@ else:
 
     # note: modify preprocessing settings here
     mha2nnunet_settings["dataset_json"]["description"] = "bpMRI scans from PI-CAI dataset to train SwinUNETR"
-    mha2nnunet_settings["preprocessing"]["matrix_size"] = [32, 256, 256]
+    mha2nnunet_settings["preprocessing"]["matrix_size"] = [20, 256, 256]
     mha2nnunet_settings["preprocessing"]["spacing"] = [3.0, 0.5, 0.5]
 
     # exclude cases
