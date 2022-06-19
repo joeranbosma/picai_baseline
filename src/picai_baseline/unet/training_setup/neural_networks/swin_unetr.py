@@ -86,10 +86,10 @@ class SwinUNETR(nn.Module):
 
         self.anisotropic = anisotropic
         if self.anisotropic:
-            patch_size = [(1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
+            self.patch_size = [(1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
         else:
-            patch_size = ensure_tuple_rep(2, spatial_dims)
-            for m, p in zip(img_size, patch_size):
+            self.patch_size = ensure_tuple_rep(2, spatial_dims)
+            for m, p in zip(img_size, self.patch_size):
                 for i in range(5):
                     if m % np.power(p, i + 1) != 0:
                         raise ValueError("input image size (img_size) should be divisible by stage-wise image resolution.")
@@ -115,7 +115,7 @@ class SwinUNETR(nn.Module):
             in_chans=in_channels,
             embed_dim=feature_size,
             window_size=window_size,
-            patch_size=patch_size,
+            patch_size=self.patch_size,
             depths=depths,
             num_heads=num_heads,
             mlp_ratio=4.0,
