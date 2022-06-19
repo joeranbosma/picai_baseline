@@ -17,7 +17,6 @@ import ast
 
 import numpy as np
 import torch
-from monai.networks.nets.swin_unetr import SwinUNETR
 from picai_baseline.unet.training_setup.augmentations.nnUNet_DA import \
     apply_augmentations
 from picai_baseline.unet.training_setup.callbacks import (
@@ -28,42 +27,9 @@ from picai_baseline.unet.training_setup.data_generator import prepare_datagens
 from picai_baseline.unet.training_setup.default_hyperparam import \
     get_default_hyperparams
 from picai_baseline.unet.training_setup.loss_functions.focal import FocalLoss
-# from picai_baseline.unet.training_setup.neural_network_selector import \
-#     neural_network_for_run
+from picai_baseline.unet.training_setup.neural_network_selector import \
+    neural_network_for_run
 from torch.utils.tensorboard import SummaryWriter
-
-
-def neural_network_for_run(args, device):
-    """Select neural network architecture for given run"""
-
-    if args.model_type == 'unet':
-        model = UNet(
-            spatial_dims=len(args.image_shape),
-            in_channels=args.num_channels,
-            out_channels=args.num_classes,
-            strides=args.model_strides,
-            channels=args.model_features
-        )
-    elif args.model_type == "swin_unetr":
-        model = SwinUNETR(
-            img_size=args.image_shape,
-            in_channels=args.num_channels,
-            out_channels=args.num_classes,
-            # depths: Sequence[int] = (2, 2, 2, 2),
-            # num_heads: Sequence[int] = (3, 6, 12, 24),
-            # feature_size: int = 24,
-            # norm_name: Union[Tuple, str] = "instance",
-            # drop_rate: float = 0.0,
-            # attn_drop_rate: float = 0.0,
-            # dropout_path_rate: float = 0.0,
-            # normalize: bool = True,
-            # use_checkpoint: bool = False,
-            # spatial_dims: int = 3,
-        )
-
-    model = model.to(device)
-    print("Loaded Neural Network Arch.:", args.model_type)
-    return model
 
 
 def main():
@@ -113,6 +79,7 @@ def main():
                         help="Neural network: number of encoder channels (as string representation)")
     parser.add_argument('--batch_size', type=int, default=8,                                                         
                         help="Mini-batch size")
+    parser.add_argument("--anisotropic_swinunetr", type=bool, action='store_true', help="Whther to use anisotropic SwinUNETR")
     parser.add_argument('--use_def_model_hp', type=int, default=1,                                                         
                         help="Use default set of model-specific hyperparameters")
 

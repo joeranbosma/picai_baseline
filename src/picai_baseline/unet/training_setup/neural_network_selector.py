@@ -12,18 +12,40 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from picai_baseline.unet.training_setup.neural_networks.swin_unetr import \
+    SwinUNETR
 from picai_baseline.unet.training_setup.neural_networks.unets import UNet
 
 
 def neural_network_for_run(args, device):
     """Select neural network architecture for given run"""
 
-    if (args.model_type == 'unet'):
-        model = UNet(spatial_dims=len(args.image_shape),
-                     in_channels=args.num_channels,
-                     out_channels=args.num_classes,
-                     strides=args.model_strides,
-                     channels=args.model_features).to(device)
+    if args.model_type == 'unet':
+        model = UNet(
+            spatial_dims=len(args.image_shape),
+            in_channels=args.num_channels,
+            out_channels=args.num_classes,
+            strides=args.model_strides,
+            channels=args.model_features
+        )
+    elif args.model_type == "swin_unetr":
+        model = SwinUNETR(
+            img_size=args.image_shape,
+            in_channels=args.num_channels,
+            out_channels=args.num_classes,
+            anisotropic=args.anisotropic_swinunetr,
+            # depths: Sequence[int] = (2, 2, 2, 2),
+            # num_heads: Sequence[int] = (3, 6, 12, 24),
+            # feature_size: int = 24,
+            # norm_name: Union[Tuple, str] = "instance",
+            # drop_rate: float = 0.0,
+            # attn_drop_rate: float = 0.0,
+            # dropout_path_rate: float = 0.0,
+            # normalize: bool = True,
+            # use_checkpoint: bool = False,
+            # spatial_dims: int = 3,
+        )
 
+    model = model.to(device)
     print("Loaded Neural Network Arch.:", args.model_type)
     return model
