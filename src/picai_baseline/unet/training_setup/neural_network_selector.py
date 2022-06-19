@@ -12,9 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from picai_baseline.unet.training_setup.neural_networks.swin_unetr import \
-    SwinUNETR
 from picai_baseline.unet.training_setup.neural_networks.unets import UNet
+
+from neural_networks.swin_unetr import SwinUNETR
 
 
 def neural_network_for_run(args, device):
