@@ -715,7 +715,7 @@ class PatchMerging(nn.Module):
                 x7 = x[:, 1::2, 1::2, 1::2, :]
                 x = torch.cat([x0, x1, x2, x3, x4, x5, x6, x7], -1)
             else:
-                assert self.patch_size == (1, 2, 3)
+                assert self.patch_size == (1, 2, 2)
                 b, d, h, w, c = x_shape
                 pad_input = (w % 2 == 1) or (d % 2 == 1)
                 if pad_input:
