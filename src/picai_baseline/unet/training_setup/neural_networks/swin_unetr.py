@@ -222,7 +222,7 @@ class SwinUNETR(nn.Module):
             in_channels=feature_size,
             out_channels=feature_size,
             kernel_size=3,
-            upsample_kernel_size=2,
+            upsample_kernel_size=self.patch_size[0] if self.anisotropic else 2,
             norm_name=norm_name,
             res_block=True,
         )
