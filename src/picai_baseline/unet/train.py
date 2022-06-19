@@ -79,7 +79,8 @@ def main():
                         help="Neural network: number of encoder channels (as string representation)")
     parser.add_argument('--batch_size', type=int, default=8,                                                         
                         help="Mini-batch size")
-    parser.add_argument("--anisotropic_swinunetr", type=bool, action='store_true', help="Whther to use anisotropic SwinUNETR")
+    parser.add_argument("--anisotropic_swinunetr", type=bool, action='store_true', help="Whether to use anisotropic SwinUNETR")
+    parser.add_argument("--debug_network_setup", type=bool, action='store_true', help="Only setup network architecture, don't train")
     parser.add_argument('--use_def_model_hp', type=int, default=1,                                                         
                         help="Use default set of model-specific hyperparameters")
 
@@ -113,6 +114,10 @@ def main():
 
         # model definition
         model = neural_network_for_run(args=args, device=device)
+
+        if args.debug_network_setup:
+            print(model)
+            exit()
 
         # loss function + optimizer
         loss_func = FocalLoss(alpha=class_weights[-1], gamma=args.focal_loss_gamma).to(device)

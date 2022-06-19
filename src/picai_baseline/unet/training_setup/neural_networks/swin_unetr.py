@@ -48,6 +48,7 @@ class SwinUNETR(nn.Module):
         normalize: bool = True,
         use_checkpoint: bool = False,
         spatial_dims: int = 3,
+        anisotropic: bool = False,
     ) -> None:
         """
         Args:
@@ -81,16 +82,19 @@ class SwinUNETR(nn.Module):
         super().__init__()
 
         img_size = ensure_tuple_rep(img_size, spatial_dims)
-        patch_size = ensure_tuple_rep(2, spatial_dims)
         window_size = ensure_tuple_rep(7, spatial_dims)
+
+        if anisotropic:
+            patch_size = [(1, 2, 2), (1, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2)]
+        else:
+            patch_size = ensure_tuple_rep(2, spatial_dims)
+            for m, p in zip(img_size, patch_size):
+                for i in range(5):
+                    if m % np.power(p, i + 1) != 0:
+                        raise ValueError("input image size (img_size) should be divisible by stage-wise image resolution.")
 
         if not (spatial_dims == 2 or spatial_dims == 3):
             raise ValueError("spatial dimension should be 2 or 3.")
-
-        for m, p in zip(img_size, patch_size):
-            for i in range(5):
-                if m % np.power(p, i + 1) != 0:
-                    raise ValueError("input image size (img_size) should be divisible by stage-wise image resolution.")
 
         if not (0 <= drop_rate <= 1):
             raise ValueError("dropout rate should be between 0 and 1.")
@@ -121,6 +125,7 @@ class SwinUNETR(nn.Module):
             norm_layer=nn.LayerNorm,
             use_checkpoint=use_checkpoint,
             spatial_dims=spatial_dims,
+            anisotropic=anisotropic,
         )
 
         self.encoder1 = UnetrBasicBlock(
@@ -885,6 +890,7 @@ class SwinTransformer(nn.Module):
         patch_norm: bool = False,
         use_checkpoint: bool = False,
         spatial_dims: int = 3,
+        anisotropic: bool = False,
     ) -> None:
         """
         Args:
