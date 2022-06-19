@@ -184,7 +184,7 @@ class SwinUNETR(nn.Module):
             in_channels=16 * feature_size,
             out_channels=8 * feature_size,
             kernel_size=3,
-            upsample_kernel_size=2,
+            upsample_kernel_size=self.patch_size[4],
             norm_name=norm_name,
             res_block=True,
         )
@@ -194,7 +194,7 @@ class SwinUNETR(nn.Module):
             in_channels=feature_size * 8,
             out_channels=feature_size * 4,
             kernel_size=3,
-            upsample_kernel_size=2,
+            upsample_kernel_size=self.patch_size[3],
             norm_name=norm_name,
             res_block=True,
         )
@@ -204,7 +204,7 @@ class SwinUNETR(nn.Module):
             in_channels=feature_size * 4,
             out_channels=feature_size * 2,
             kernel_size=3,
-            upsample_kernel_size=2,
+            upsample_kernel_size=self.patch_size[2],
             norm_name=norm_name,
             res_block=True,
         )
@@ -213,7 +213,7 @@ class SwinUNETR(nn.Module):
             in_channels=feature_size * 2,
             out_channels=feature_size,
             kernel_size=3,
-            upsample_kernel_size=2,
+            upsample_kernel_size=self.patch_size[1],
             norm_name=norm_name,
             res_block=True,
         )
@@ -223,7 +223,7 @@ class SwinUNETR(nn.Module):
             in_channels=feature_size,
             out_channels=feature_size,
             kernel_size=3,
-            upsample_kernel_size=self.patch_size[0] if self.anisotropic else 2,
+            upsample_kernel_size=self.patch_size[0],
             norm_name=norm_name,
             res_block=True,
         )
@@ -891,7 +891,6 @@ class SwinTransformer(nn.Module):
         patch_norm: bool = False,
         use_checkpoint: bool = False,
         spatial_dims: int = 3,
-        anisotropic: bool = False,
     ) -> None:
         """
         Args:
@@ -918,9 +917,8 @@ class SwinTransformer(nn.Module):
         self.patch_norm = patch_norm
         self.window_size = window_size
         self.patch_size = patch_size
-        self.anisotropic = anisotropic
         self.patch_embed = PatchEmbed(
-            patch_size=self.patch_size[0] if self.anisotropic else self.patch_size,
+            patch_size=self.patch_size[0],
             in_chans=in_chans,
             embed_dim=embed_dim,
             norm_layer=norm_layer if self.patch_norm else None,  # type: ignore
