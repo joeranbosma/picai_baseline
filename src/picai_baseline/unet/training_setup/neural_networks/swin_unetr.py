@@ -917,8 +917,9 @@ class SwinTransformer(nn.Module):
         self.patch_norm = patch_norm
         self.window_size = window_size
         self.patch_size = patch_size
+        self.anisotropic = anisotropic
         self.patch_embed = PatchEmbed(
-            patch_size=self.patch_size[0] if self.animototopic else self.patch_size,
+            patch_size=self.patch_size[0] if self.anisotropic else self.patch_size,
             in_chans=in_chans,
             embed_dim=embed_dim,
             norm_layer=norm_layer if self.patch_norm else None,  # type: ignore
