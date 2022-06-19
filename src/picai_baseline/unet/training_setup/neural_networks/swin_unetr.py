@@ -90,11 +90,15 @@ class SwinUNETR(nn.Module):
             self.patch_size = [(1, 2, 2), (1, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2)]
         else:
             self.patch_size = [ensure_tuple_rep(2, spatial_dims)]*5
-
-        # for m, p in zip(img_size, self.patch_size):
-        #     for i in range(5):
-        #         if m % np.power(p, i + 1) != 0:
-        #             raise ValueError("input image size (img_size) should be divisible by stage-wise image resolution.")
+        
+        # verify input image size is compatible with patch sizes
+        for i in range(spatial_dims):
+            downsample_factors = [patch_size[i] for patch_size in self.patch_size]
+            downsample_factor = np.prod(downsample_factors)
+            if img_size[i] % downsample_factor != 0:
+                raise ValueError(
+                    f"Input image size (img_size) should be divisible by {downsample_factor} to match patch sizes"
+                )
 
         if not (spatial_dims == 2 or spatial_dims == 3):
             raise ValueError("spatial dimension should be 2 or 3.")
