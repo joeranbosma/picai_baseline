@@ -86,7 +86,7 @@ class SwinUNETR(nn.Module):
 
         self.anisotropic = anisotropic
         if self.anisotropic:
-            self.patch_size = [(1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
+            self.patch_size = [(1, 2, 2), (1, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2)]
         else:
             self.patch_size = [ensure_tuple_rep(2, spatial_dims)]*5
 
@@ -674,7 +674,8 @@ class PatchMerging(nn.Module):
     """
 
     def __init__(
-        self, dim: int, norm_layer: Type[LayerNorm] = nn.LayerNorm, spatial_dims: int = 3
+        self, dim: int, norm_layer: Type[LayerNorm] = nn.LayerNorm, spatial_dims: int = 3,
+        patch_size: Union[Sequence[int], int] = 2
     ) -> None:  # type: ignore
         """
         Args:
@@ -691,15 +692,20 @@ class PatchMerging(nn.Module):
         elif spatial_dims == 2:
             self.reduction = nn.Linear(4 * dim, 2 * dim, bias=False)
             self.norm = norm_layer(4 * dim)
+        if isinstance(patch_size, int):
+            patch_size = ensure_tuple_rep(patch_size, spatial_dims)
+        self.patch_size = patch_size
 
     def forward(self, x):
 
         x_shape = x.size()
         if len(x_shape) == 5:
             b, d, h, w, c = x_shape
-            pad_input = (h % 2 == 1) or (w % 2 == 1) or (d % 2 == 1)
+            print("self.patch_size", self.patch_size)
+            dd, dh, dw = self.patch_size
+            pad_input = (h % dh == 1) or (w % dw == 1) or (d % dd == 1)
             if pad_input:
-                x = F.pad(x, (0, 0, 0, d % 2, 0, w % 2, 0, h % 2))
+                x = F.pad(x, (0, 0, 0, d % dd, 0, w % dw, 0, h % dh))
             x0 = x[:, 0::2, 0::2, 0::2, :]
             x1 = x[:, 1::2, 0::2, 0::2, :]
             x2 = x[:, 0::2, 1::2, 0::2, :]
@@ -788,6 +794,7 @@ class BasicLayer(nn.Module):
         norm_layer: Type[LayerNorm] = nn.LayerNorm,  # type: ignore
         downsample: isinstance = None,  # type: ignore
         use_checkpoint: bool = False,
+        patch_size: Union[Sequence[int], int] = 2,
     ) -> None:
         """
         Args:
@@ -831,7 +838,10 @@ class BasicLayer(nn.Module):
         )
         self.downsample = downsample
         if self.downsample is not None:
-            self.downsample = downsample(dim=dim, norm_layer=norm_layer, spatial_dims=len(self.window_size))
+            self.downsample = downsample(
+                dim=dim, norm_layer=norm_layer, spatial_dims=len(self.window_size),
+                patch_size=patch_size
+            )
 
     def forward(self, x):
         x_shape = x.size()
