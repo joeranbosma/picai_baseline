@@ -117,6 +117,13 @@ def main():
 
         if args.debug_network_setup:
             print(model)
+            for batch_data in train_gen:
+                try:
+                    inputs = batch_data['data'].to(device)
+                except Exception:
+                    inputs = torch.from_numpy(batch_data['data']).to(device)
+                outputs = model(inputs)
+                print("outputs.shape", outputs.shape)
             exit()
 
         # loss function + optimizer
