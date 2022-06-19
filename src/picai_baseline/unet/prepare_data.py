@@ -39,7 +39,7 @@ else:
     workdir = Path("/workdir")
 
 # settings
-task = "Task201_picai_swinunetr_anisotropic"
+task = "Task202_picai_swinunetr_anisotropic"
 
 # paths
 mha_archive_dir = inputdir / "images"
