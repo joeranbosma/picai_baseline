@@ -75,11 +75,12 @@ def main():
                         help="Neural network: architectures")
     parser.add_argument('--model_strides', type=str, default='[(2, 2, 2), (1, 2, 2), (1, 2, 2), (1, 2, 2), (2, 2, 2)]', 
                         help="Neural network: convolutional strides (as string representation)")
+    parser.add_argument('--patch_size', type=str, default='[(2, 2, 2), (1, 2, 2), (1, 2, 2), (1, 2, 2), (2, 2, 2)]', 
+                        help="Neural network: downsampling patch sizes (as string representation)")
     parser.add_argument('--model_features', type=str, default='[32, 64, 128, 256, 512, 1024]',                           
                         help="Neural network: number of encoder channels (as string representation)")
     parser.add_argument('--batch_size', type=int, default=8,                                                         
                         help="Mini-batch size")
-    parser.add_argument("--anisotropic_swinunetr", action='store_true', help="Whether to use anisotropic SwinUNETR")
     parser.add_argument("--debug_network_setup", action='store_true', help="Only setup network architecture, don't train")
     parser.add_argument('--use_def_model_hp', type=int, default=1,                                                         
                         help="Use default set of model-specific hyperparameters")
@@ -87,6 +88,7 @@ def main():
     args = parser.parse_args()
     args.model_strides = ast.literal_eval(args.model_strides)
     args.model_features = ast.literal_eval(args.model_features)
+    args.patch_size = ast.literal_eval(args.patch_size)
 
 
     # retrieve default set of hyperparam (architecture, batch size) for given neural network

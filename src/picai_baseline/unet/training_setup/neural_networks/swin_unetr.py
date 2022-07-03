@@ -48,7 +48,7 @@ class SwinUNETR(nn.Module):
         normalize: bool = True,
         use_checkpoint: bool = False,
         spatial_dims: int = 3,
-        anisotropic: bool = False,
+        patch_size: Union[int, Sequence[int], Sequence[Sequence[int]]] = 2,
     ) -> None:
         """
         Args:
@@ -84,12 +84,12 @@ class SwinUNETR(nn.Module):
         img_size = ensure_tuple_rep(img_size, spatial_dims)
         window_size = ensure_tuple_rep(7, spatial_dims)
 
-        self.anisotropic = anisotropic
-        if self.anisotropic:
-            # nnUNet's anisotropic patch sizes for input of size (20, 160, 160)
-            self.patch_size = [(1, 2, 2), (1, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2)]
+        if isinstance(patch_size, int) or isinstance(patch_size[0], int):
+            # patch size is the size (i.e., 2), or shape of a single downsampling step (i.e., (2, 2, 2) for 3D)
+            self.patch_size = [ensure_tuple_rep(patch_size, spatial_dims)]*5
         else:
-            self.patch_size = [ensure_tuple_rep(2, spatial_dims)]*5
+            # patch size is the full specification of downsampling steps
+            self.patch_size = patch_size
         
         # verify input image size is compatible with patch sizes
         for i in range(spatial_dims):
