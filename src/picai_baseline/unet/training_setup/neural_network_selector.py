@@ -17,7 +17,7 @@ from picai_baseline.unet.training_setup.neural_networks.unets import UNet
 from training_setup.neural_networks.swin_unetr import SwinUNETR
 
 
-def neural_network_for_run(args, device):
+def neural_network_for_run(args, device, verbose=2):
     """Select neural network architecture for given run"""
 
     if args.model_type == 'unet':
@@ -50,4 +50,5 @@ def neural_network_for_run(args, device):
 
     model = model.to(device)
     print("Loaded Neural Network Arch.:", args.model_type)
+    print(model) if verbose >= 2 else None
     return model
