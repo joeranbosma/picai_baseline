@@ -33,7 +33,6 @@ def neural_network_for_run(args, device):
             img_size=args.image_shape,
             in_channels=args.num_channels,
             out_channels=args.num_classes,
-            anisotropic=args.anisotropic_swinunetr,
             patch_size=args.patch_size,
             # depths: Sequence[int] = (2, 2, 2, 2),
             # num_heads: Sequence[int] = (3, 6, 12, 24),
