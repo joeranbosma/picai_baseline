@@ -1,4 +1,6 @@
+import torch
 from nnunet.training.network_training.nnUNetTrainerV2_Loss_FL_and_CE import nnUNetTrainerV2_Loss_FL_and_CE_checkpoints
+from nnunet.network_architecture.monai_swinunetr import SwinUNETR
 
 class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
     """
@@ -15,8 +17,11 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
 
     def initialize_network(self):
         """Initialize SwinUNETR network"""
-
         print("Hello there!")
+
+        self.net_num_pool_op_kernel_sizes = [[2, 2, 2], [2, 2, 2], [2, 2, 2], [2, 2, 2], [1, 2, 2]]
+        print(f"Set downsampling sizes to {self.net_num_pool_op_kernel_sizes} for SwinUNETR")
+        
         print("="*100)
         print(self.network)
         print("="*100)
@@ -26,3 +31,26 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
         print("="*100)
         print(self.net_conv_kernel_sizes)
         print("="*100)
+
+
+        model = SwinUNETR(
+            img_size=self.patch_size,  # e.g., [ 16 320 320]
+            in_channels=self.num_input_channels,
+            out_channels=self.num_classes,
+            patch_size=self.net_num_pool_op_kernel_sizes,  # e.g., [[1, 2, 2], [1, 2, 2], [2, 2, 2], [2, 2, 2], [1, 2, 2], [1, 2, 2]]
+            # depths: Sequence[int] = (2, 2, 2, 2),
+            # num_heads: Sequence[int] = (3, 6, 12, 24),
+            # feature_size: int = 24,
+            # norm_name: Union[Tuple, str] = "instance",
+            # drop_rate: float = 0.0,
+            # attn_drop_rate: float = 0.0,
+            # dropout_path_rate: float = 0.0,
+            # normalize: bool = True,
+            # use_checkpoint: bool = False,
+            # spatial_dims: int = 3,
+        )
+
+        self.network = model
+
+        if torch.cuda.is_available():
+            self.network.cuda()
