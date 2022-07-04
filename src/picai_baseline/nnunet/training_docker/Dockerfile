@@ -28,13 +28,9 @@ COPY io.py /tmp/io.py
 RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
     mv /tmp/io.py "$SITE_PKG/nnunet/utilities/io.py"
 
-
-# Install repositories
-RUN pip3 install \
-    picai_eval \
-    picai_prep \
-    monai>=0.8.0 \
-    git+https://github.com/DIAGNijmegen/picai_baseline
+# Install requirements
+COPY requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt
 
 # copy custom files to nnUNet folder
 COPY nnUNetTrainerV2_focalLoss.py /tmp/nnUNetTrainerV2_focalLoss.py

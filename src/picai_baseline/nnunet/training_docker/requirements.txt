@@ -1,0 +1,5 @@
+picai_eval
+picai_prep
+monai>=0.8.0
+einops
+git+https://github.com/DIAGNijmegen/picai_baseline
