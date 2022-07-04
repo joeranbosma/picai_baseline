@@ -49,9 +49,12 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
         self._deep_supervision = False
         self.do_ds = False
 
-        device = self.network.get_device()
-        print(f"Network initialized, moving to {device}")
-        self.network.to("cuda:0")
-
         if torch.cuda.is_available():
             self.network.cuda()
+        else:
+            print("Cuda is not available!")
+
+        device = torch.device("cuda")
+        # device = self.network.get_device()
+        print(f"Network initialized, moving to {device}")
+        self.network.to(device)
