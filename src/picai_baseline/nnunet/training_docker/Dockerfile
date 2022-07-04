@@ -48,6 +48,14 @@ COPY nnUNetTrainerV2_Loss_FL_and_CE.py /tmp/nnUNetTrainerV2_Loss_FL_and_CE.py
 RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
     mv /tmp/nnUNetTrainerV2_Loss_FL_and_CE.py "$SITE_PKG/nnunet/training/network_training/nnUNetTrainerV2_Loss_FL_and_CE.py"
 
+COPY nnUNetTrainerV2_SwinUNETR.py /tmp/nnUNetTrainerV2_SwinUNETR.py
+RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
+    mv /tmp/nnUNetTrainerV2_SwinUNETR.py "$SITE_PKG/nnunet/training/network_training/nnUNetTrainerV2_SwinUNETR.py"
+
+COPY swin_unetr.py /tmp/monai_swinunetr.py
+RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
+    mv /tmp/monai_swinunetr.py "$SITE_PKG/nnunet/network_architecture/monai_swinunetr.py"
+
 # Configure entrypoint
 COPY --chown=user nnunet_wrapper.py /home/user/nnunet_wrapper.py
 RUN chmod +x /home/user/nnunet_wrapper.py && \

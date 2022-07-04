@@ -17,6 +17,7 @@ from torch import nn
 from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from nnunet.training.loss_functions.crossentropy import RobustCrossEntropyLoss
 from nnunet.training.network_training.nnUNet_variants.loss_function.nnUNetTrainerV2_focalLoss import FocalLoss
+from nnunet.utilities.nd_softmax import softmax_helper
 # TODO: replace FocalLoss by fixed implemetation (and set smooth=0 in that one?)
 
 
@@ -29,7 +30,7 @@ class FL_and_CE_loss(nn.Module):
             ce_kwargs = {}
 
         self.aggregate = aggregate
-        self.fl = FocalLoss(apply_nonlin=nn.Softmax(), **fl_kwargs)
+        self.fl = FocalLoss(apply_nonlin=softmax_helper, **fl_kwargs)
         self.ce = RobustCrossEntropyLoss(**ce_kwargs)
         self.alpha = alpha
 
