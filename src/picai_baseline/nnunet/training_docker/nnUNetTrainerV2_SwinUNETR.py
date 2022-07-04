@@ -43,8 +43,9 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
         self.network._deep_supervision = False
         self.network.do_ds = False
 
-        print("Network initialized, moving to GPU")
-        self.network.to(self.network.get_device())
+        device = self.network.get_device()
+        print(f"Network initialized, moving to {device}")
+        self.network.to("cuda:0")
 
         if torch.cuda.is_available():
             self.network.cuda()
