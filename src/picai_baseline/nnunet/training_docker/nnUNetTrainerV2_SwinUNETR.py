@@ -1,10 +1,12 @@
 import torch
 from nnunet.network_architecture.monai_swinunetr import SwinUNETR
+from nnunet.training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_noDeepSupervision import \
+    nnUNetTrainerV2_noDeepSupervision
 from nnunet.training.network_training.nnUNetTrainerV2_Loss_FL_and_CE import \
-    nnUNetTrainerV2_Loss_FL_and_CE_checkpoints
+    FL_and_CE_loss
 
 
-class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
+class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
     """
     Set network to SwinUNETR
     Set loss to FL + CE and set checkpoints
@@ -14,6 +16,8 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
                  unpack_data=True, deterministic=True, fp16=False):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
                          deterministic, fp16)
+        self.loss = FL_and_CE_loss(alpha=0.5)
+        self.save_latest_only = False
 
     def initialize_network(self):
         """Initialize SwinUNETR network"""
@@ -42,6 +46,8 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
         self.network = model
         self.network._deep_supervision = False
         self.network.do_ds = False
+        self._deep_supervision = False
+        self.do_ds = False
 
         device = self.network.get_device()
         print(f"Network initialized, moving to {device}")
