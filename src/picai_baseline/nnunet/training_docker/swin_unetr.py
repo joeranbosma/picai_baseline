@@ -22,11 +22,12 @@ from monai.networks.blocks import (PatchEmbed, UnetOutBlock, UnetrBasicBlock,
 from monai.networks.layers import DropPath, trunc_normal_
 from monai.utils import ensure_tuple_rep, optional_import
 from torch.nn import LayerNorm
+from nnunet.network_architecture.neural_network import SegmentationNetwork
 
 rearrange, _ = optional_import("einops", name="rearrange")
 
 
-class SwinUNETR(nn.Module):
+class SwinUNETR(SegmentationNetwork):
     """
     Swin UNETR based on: "Hatamizadeh et al.,
     Swin UNETR: Swin Transformers for Semantic Segmentation of Brain Tumors in MRI Images
