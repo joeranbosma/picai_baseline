@@ -12,8 +12,6 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
                  unpack_data=True, deterministic=True, fp16=False):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
                          deterministic, fp16)
-        self._deep_supervision = False
-        self.do_ds = False
 
     def initialize_network(self):
         """Initialize SwinUNETR network"""
@@ -40,6 +38,8 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
         )
 
         self.network = model
+        self.network._deep_supervision = False
+        self.network.do_ds = False
 
         if torch.cuda.is_available():
             self.network.cuda()
