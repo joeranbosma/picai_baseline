@@ -12,32 +12,21 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_Loss_FL_and_CE_checkpoints):
                  unpack_data=True, deterministic=True, fp16=False):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
                          deterministic, fp16)
-        print("Hello here.")
-        print(self.was_initialized)
+        self._deep_supervision = False
+        self.do_ds = False
 
     def initialize_network(self):
         """Initialize SwinUNETR network"""
-        print("Hello there!")
+        print("Overwriting network to SwinUNETR")
 
         self.net_num_pool_op_kernel_sizes = [[2, 2, 2], [2, 2, 2], [2, 2, 2], [2, 2, 2], [1, 2, 2]]
-        print(f"Set downsampling sizes to {self.net_num_pool_op_kernel_sizes} for SwinUNETR")
-        
-        print("="*100)
-        print(self.network)
-        print("="*100)
-        print(self.patch_size)
-        print("="*100)
-        print(self.net_num_pool_op_kernel_sizes)
-        print("="*100)
-        print(self.net_conv_kernel_sizes)
-        print("="*100)
-
+        print(f"Set downsampling sizes to {self.net_num_pool_op_kernel_sizes}")
 
         model = SwinUNETR(
             img_size=self.patch_size,  # e.g., [ 16 320 320]
             in_channels=self.num_input_channels,
             out_channels=self.num_classes,
-            patch_size=self.net_num_pool_op_kernel_sizes,  # e.g., [[1, 2, 2], [1, 2, 2], [2, 2, 2], [2, 2, 2], [1, 2, 2], [1, 2, 2]]
+            patch_size=self.net_num_pool_op_kernel_sizes,
             # depths: Sequence[int] = (2, 2, 2, 2),
             # num_heads: Sequence[int] = (3, 6, 12, 24),
             # feature_size: int = 24,
