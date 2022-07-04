@@ -21,8 +21,8 @@ from monai.networks.blocks import (PatchEmbed, UnetOutBlock, UnetrBasicBlock,
                                    UnetrUpBlock)
 from monai.networks.layers import DropPath, trunc_normal_
 from monai.utils import ensure_tuple_rep, optional_import
-from torch.nn import LayerNorm
 from nnunet.network_architecture.neural_network import SegmentationNetwork
+from torch.nn import LayerNorm
 
 rearrange, _ = optional_import("einops", name="rearrange")
 
@@ -702,7 +702,7 @@ class PatchMerging(nn.Module):
 
         x_shape = x.size()
         if len(x_shape) == 5:
-            if self.patch_size == (2, 2, 2):
+            if tuple(self.patch_size) == (2, 2, 2):
                 b, d, h, w, c = x_shape
                 pad_input = (d % 2 == 1) or (h % 2 == 1) or (w % 2 == 1)
                 if pad_input:
@@ -716,8 +716,7 @@ class PatchMerging(nn.Module):
                 x6 = x[:, 0::2, 0::2, 1::2, :]
                 x7 = x[:, 1::2, 1::2, 1::2, :]
                 x = torch.cat([x0, x1, x2, x3, x4, x5, x6, x7], -1)
-            else:
-                assert self.patch_size == (1, 2, 2)
+            elif tuple(self.patch_size) == (1, 2, 2):
                 b, d, h, w, c = x_shape
                 pad_input = (w % 2 == 1) or (d % 2 == 1)
                 if pad_input:
@@ -727,6 +726,8 @@ class PatchMerging(nn.Module):
                 x2 = x[:, :, 0::2, 1::2, :]
                 x3 = x[:, :, 1::2, 1::2, :]
                 x = torch.cat([x0, x1, x2, x3], -1)
+            else:
+                raise ValueError(f"Unsupported patch size: {self.patch_size}")
 
         elif len(x_shape) == 4:
             b, h, w, c = x_shape
