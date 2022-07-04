@@ -49,8 +49,6 @@ for fold, nnunet_fold in enumerate(nnunet_splits):
         # iterate over each training/validation case
         for subject_id in nnunet_split:
             patient_id, study_id = subject_id.split('_')
-            if study_id in study_list_exclude:
-                continue
 
             # load annotation
             lbl = sitk.GetArrayFromImage(sitk.ReadImage(str(preprocessed_data_path / 'labelsTr' / f'{subject_id}.nii.gz')))

@@ -14,7 +14,7 @@ def extract_lesion_candidates_compatibility(pred):
     return nnUNet_cropped_prediction_compatibility(extract_lesion_candidates(pred)[0])
 
 
-task = "Task2201_picai_baseline"
+task = "Task2203_picai_baseline"
 trainer = "nnUNetTrainerV2_Loss_FL_and_CE_checkpoints__nnUNetPlansv2.1"
 results_dir = Path("/workdir/results/nnUNet/3d_fullres/")
 
@@ -35,16 +35,19 @@ for fold in range(5):
             print(f"Metrics found at {metrics_path}, skipping..")
             continue
 
-        # evaluate
-        metrics = evaluate_folder(
-            y_det_dir=softmax_dir,
-            y_true_dir=f"/workdir/nnUNet_raw_data/{task}/labelsTr",
-            subject_list=valid_splits[fold]['subject_list'],
-            y_det_postprocess_func=extract_lesion_candidates_compatibility,
-            y_true_postprocess_func=nnUNet_cropped_prediction_compatibility,
-        )
+        try:
+            # evaluate
+            metrics = evaluate_folder(
+                y_det_dir=softmax_dir,
+                y_true_dir=f"/workdir/nnUNet_raw_data/{task}/labelsTr",
+                subject_list=valid_splits[fold]['subject_list'],
+                y_det_postprocess_func=extract_lesion_candidates_compatibility,
+                y_true_postprocess_func=nnUNet_cropped_prediction_compatibility,
+            )
 
-        # save and show metrics
-        metrics.save(metrics_path)
-        print(f"Results for checkpoint {checkpoint}:")
-        print(metrics)
+            # save and show metrics
+            metrics.save(metrics_path)
+            print(f"Results for checkpoint {checkpoint}:")
+            print(metrics)
+        except Exception as e:
+            print(f"Error for checkpoint {checkpoint}: {e}")
