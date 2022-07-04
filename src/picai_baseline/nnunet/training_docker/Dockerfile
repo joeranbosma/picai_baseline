@@ -29,10 +29,11 @@ RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
     mv /tmp/io.py "$SITE_PKG/nnunet/utilities/io.py"
 
 
-# Install PI-CAI repositories
+# Install repositories
 RUN pip3 install \
     picai_eval \
     picai_prep \
+    monai>=0.8.0 \
     git+https://github.com/DIAGNijmegen/picai_baseline
 
 # copy custom files to nnUNet folder
