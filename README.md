@@ -1,7 +1,3 @@
-⚠️ **This repository is still under active development.** The 🏗 icon indicates that the section is still under construction.
-
-#
-
 # Baseline AI Models for Prostate Cancer Detection in MRI
 
 This repository contains utilities to set up and train deep learning-based detection models for clinically significant prostate cancer (csPCa) in MRI. In turn, these models serve as the official baseline AI solutions for the [PI-CAI challenge](https://pi-cai.grand-challenge.org/). As of now, the following three models will be provided and supported:
@@ -11,6 +7,9 @@ This repository contains utilities to set up and train deep learning-based detec
 - [nnDetection](nndetection_baseline.md)
 
 All three solutions share the same starting point, with respect to their expected [folder structure](#folder-structure) and [data preparation](#data-preparation) pipeline.
+
+## Issues
+Please feel free to raise any issues you encounter [here](https://github.com/DIAGNijmegen/picai_baseline/issues).
 
 
 ## Installation
@@ -166,6 +165,21 @@ Joeran Bosma, Anindo Saha, Matin Hosseinzadeh, Ilse Slootweg, Maarten de Rooij, 
 <a id="4" href="#">[4]</a> 
 Joeran Bosma, Natalia Alves and Henkjan Huisman. "Performant and Reproducible Deep Learning-Based Cancer Detection Models for Medical Imaging". _Under Review_.
 
+
+##
+If you are using this codebase or some part of it, please cite the following article:
+
+● [A. Saha, J. J. Twilt, J. S. Bosma, B. van Ginneken, D. Yakar, M. Elschot, J. Veltman, J. J. Fütterer, M. de Rooij, H. Huisman, "Artificial Intelligence and Radiologists at Prostate Cancer Detection in MRI: The PI-CAI Challenge (Study Protocol)", DOI: 10.5281/zenodo.6667655](https://zenodo.org/record/6667655)
+
+**BibTeX:**
+```
+@ARTICLE{PICAI_BIAS,
+    author = {Anindo Saha, Jasper J. Twilt, Joeran S. Bosma, Bram van Ginneken, Derya Yakar, Mattijs Elschot, Jeroen Veltman, Jurgen Fütterer, Maarten de Rooij, Henkjan Huisman},
+    title  = {{Artificial Intelligence and Radiologists at Prostate Cancer Detection in MRI: The PI-CAI Challenge (Study Protocol)}}, 
+    year   = {2022},
+    doi    = {10.5281/zenodo.6667655}
+}
+```
 
 [picai_nnunet_docker]: https://hub.docker.com/r/joeranbosma/picai_nnunet
 [picai_nndetection_docker]: https://hub.docker.com/r/joeranbosma/picai_nndetection
