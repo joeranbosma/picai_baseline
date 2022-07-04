@@ -43,6 +43,9 @@ else:
 
 # settings
 task = "Task202_picai_swinunetr_anisotropic"
+study_list_exclude = [
+    "1001499"
+]
 
 # paths
 mha_archive_dir = inputdir / "images"
