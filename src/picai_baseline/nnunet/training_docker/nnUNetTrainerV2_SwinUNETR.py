@@ -45,9 +45,6 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
             # spatial_dims: int = 3,
         )
 
-        self.network._deep_supervision = False
-        self.network.do_ds = False
-
         if torch.cuda.is_available():
             device = torch.device("cuda")
         elif torch.backends.mps.is_available():
@@ -59,3 +56,7 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
         print(f"Network initialized, moving to {device}")
         self.network = model.to(device)
         print(f"Network is now on {self.network.get_device()}")
+
+        # disable deep supervision
+        self.network._deep_supervision = False
+        self.network.do_ds = False
