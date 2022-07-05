@@ -18,6 +18,8 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
                          deterministic, fp16)
         self.loss = FL_and_CE_loss(alpha=0.5)
         self.save_latest_only = False
+        self._deep_supervision = False
+        self.do_ds = False
 
     def initialize_network(self):
         """Initialize SwinUNETR network"""
@@ -43,18 +45,17 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
             # spatial_dims: int = 3,
         )
 
-        self.network = model
         self.network._deep_supervision = False
         self.network.do_ds = False
-        self._deep_supervision = False
-        self.do_ds = False
 
         if torch.cuda.is_available():
-            self.network.cuda()
+            device = torch.device("cuda")
+        elif torch.backends.mps.is_available():
+            device = torch.device("mps")
         else:
-            print("Cuda is not available!")
+            print("GPU is not available!")
+            device = torch.device("cpu")
 
-        device = torch.device("cuda")
-        # device = self.network.get_device()
         print(f"Network initialized, moving to {device}")
-        self.network.to(device)
+        self.network = model.to(device)
+        print(f"Network is now on {self.network.get_device()}")
