@@ -207,7 +207,11 @@ def plan_train(argv):
 
     # Set environment variables
     datadir = Path(args.data)
-    prepdir = Path('/home/user/data')
+    if 'prepdir' in os.environ:
+        prepdir = Path(os.environ['prepdir'])
+    else:
+        prepdir = Path("/home/user/data")
+
     splits_file = prepdir / args.task / 'splits_final.pkl'
 
     os.environ['nnUNet_raw_data_base'] = str(datadir)
