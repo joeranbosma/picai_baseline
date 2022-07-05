@@ -1,6 +1,7 @@
 #!/opt/conda/bin/python
 
 import argparse
+import functools
 import os
 import pickle
 import re
@@ -8,18 +9,15 @@ import subprocess
 import sys
 from collections import OrderedDict
 from copy import deepcopy
-import functools
 from pathlib import Path
 
 import numpy as np
 from carbontracker.tracker import CarbonTracker
-from picai_prep.data_utils import atomic_file_copy
-
 from nnunet.utilities import shutil_sol
 from nnunet.utilities.io import (checksum, path_exists, read_json,
                                  refresh_file_list, write_json)
+from picai_prep.data_utils import atomic_file_copy
 
-PLANS = 'nnUNetPlansv2.1'
 print = functools.partial(print, flush=True)
 
 
@@ -185,8 +183,15 @@ def plan_train(argv):
                         help="Use a dictionary in string format to specify keyword arguments. This will get"
                              " parsed into a dictionary, the values get correctly parsed to the data format"
                              " and passed to the trainer. Example (backslash included): \n"
-                             r"--trainer_kwargs='{\"class_weights\":[0,2.00990337,1.42540704,2.13387239,0.85529504,0.592059,0.30040984,8.26874351],"
-                             r"\"weight_dc\":0.3,\"weight_ce\":0.7}'")
+                             r"--trainer_kwargs='{\"class_weights\":[0,2.00990337,1.42540704,2.13387239,0.85529504,0.592059,0.30040984,8.26874351],\"weight_dc\":0.3,\"weight_ce\":0.7}'")
+    parser.add_argument("--plans", type=str, default="nnUNetPlansv2.1", help="Can be used to specify a custom identifier for the plans file")
+    parser.add_argument("--planner3d", type=str, default="ExperimentPlanner3D_v21",
+                        help="Name of the ExperimentPlanner class for the full resolution 3D U-Net and U-Net cascade. "
+                        "Default is ExperimentPlanner3D_v21. Can be 'None', in which case these U-Nets will not be "
+                        "configured",)
+    parser.add_argument("--planner2d", type=str, default="None",
+                        help="Name of the ExperimentPlanner class for the 2D U-Net. Default is 'None', so that the 2D U-Net is not configured, saving time during planning"
+                        "2D nnUNet default planner is 'ExperimentPlanner2D_v21'.",)
     parser.add_argument('--fold', type=str, default='0')
     parser.add_argument('--custom_split', type=str, help='Path to a JSON file with a custom data split into five folds')
     parser.add_argument('--plan_only', action='store_true', help='Run the planning step, but not the training step')
@@ -196,8 +201,6 @@ def plan_train(argv):
                         help='Export probability maps for ensembling during the final validation')
     parser.add_argument('--use_compressed_data', action='store_true',
                         help='Disable unpacking of compressed training data, use with caution')
-    parser.add_argument('--plan_2d', action='store_true', help='Enable planning of 2D experiments')
-    parser.add_argument('--dont_plan_3d', action='store_true', help='Disable planning of 3D experiments')
     parser.add_argument('--carbontracker', action='store_true', help='Enables tracking of energy consumption')
     parser.add_argument('--pretrained_weights', type=str, required=False, default=None)
     args = parser.parse_args(argv)
@@ -243,12 +246,17 @@ def plan_train(argv):
                 '-tl', '1', '-tf', '1',
                 '--verify_dataset_integrity'
             ]
-            if not args.plan_2d and '2d' not in args.network:
+            if args.planner2d == "None" and '2d' not in args.network:
                 cmd.extend(['--planner2d', 'None'])  # disable 2D planning to speed up the preprocessing phase
-            if args.dont_plan_3d and '3d' not in args.network:
+            else:
+                cmd.extend(["-pl2d", args.planner2d])  # Running with specified 2D planner
+            if args.planner2d == "None" and '3d' not in args.network:
                 cmd.extend(['--planner3d', 'None'])
+            else:
+                cmd.extend(["-pl3d", args.planner3d])  # Running with specified 3D planner
             if args.pretrained_weights is not None:
                 cmd.extend(['-pretrained_weights', args.pretrained_weights])
+
             subprocess.check_call(cmd)
 
             # Use a custom data split?
@@ -284,7 +292,7 @@ def plan_train(argv):
 
         fold_name = 'all' if args.fold == 'all' else f'fold_{args.fold}'
         outdir = Path(
-            os.environ['RESULTS_FOLDER']) / 'nnUNet' / args.network / args.task / f'{args.trainer}__{PLANS}' / fold_name
+            os.environ['RESULTS_FOLDER']) / 'nnUNet' / args.network / args.task / f'{args.trainer}__{args.plans}' / fold_name
 
         if args.validation_only:
             print('[#] Running validation step only')
@@ -299,7 +307,7 @@ def plan_train(argv):
             cmd.append('--trainer_kwargs=%s' % args.trainer_kwargs)
         if args.use_compressed_data:
             cmd.append('--use_compressed_data')
-        if args.ensembling:
+        if args.ensembling or args.network == '3d_lowres':
             cmd.append('--npz')
 
         subprocess.check_call(cmd)
@@ -331,6 +339,7 @@ def find_best_configuration(argv):
     parser.add_argument('data', type=str)
     parser.add_argument('--networks', type=str, nargs='*', default=['3d_fullres'])
     parser.add_argument('--trainer', type=str, default='nnUNetTrainerV2')
+    parser.add_argument("--plans", type=str, default="nnUNetPlansv2.1")
     args = parser.parse_args(argv)
 
     # Set environment variables
@@ -351,7 +360,9 @@ def find_best_configuration(argv):
             'nnUNet_determine_postprocessing',
             '-m', network,
             '-t', get_task_id(args.task),
-            '-tr', str(args.trainer)
+            '-tr', str(args.trainer),
+            "-pl",
+            args.plans,
         ])
 
     if len(args.networks) > 1:
@@ -414,6 +425,7 @@ def predict(argv):
     parser.add_argument('--results', type=str, required=True)  # Path to training results folder with model weights etc
     parser.add_argument('--network', type=str, default='3d_fullres')
     parser.add_argument('--trainer', type=str, default='nnUNetTrainerV2')
+    parser.add_argument("--plans", type=str, default="nnUNetPlansv2.1")
     parser.add_argument('--folds', type=str, required=False)
     parser.add_argument('--checkpoint', type=str,
                         required=False)  # Checkpoint to load, defaults to "model_final_checkpoint"
@@ -434,6 +446,7 @@ def ensemble(argv):
     parser.add_argument('--results', type=str, required=True)  # Path to training results folder with model weights etc
     parser.add_argument('--networks', type=str, nargs='*', default=['3d_fullres'])
     parser.add_argument('--trainers', type=str, nargs='*', default=['nnUNetTrainerV2'])
+    parser.add_argument("--plans", type=str, default="nnUNetPlansv2.1")
     parser.add_argument('--folds', type=str, required=False)
     parser.add_argument('--checkpoint', type=str,
                         required=False)  # Checkpoint to load, defaults to "model_final_checkpoint"
@@ -460,7 +473,7 @@ def ensemble(argv):
         output_dirs.append(output_dir)
         args_predict.output = str(output_dir)
 
-        ensemble_name_fragments.append(f'{args_predict.network}__{args_predict.trainer}__{PLANS}')
+        ensemble_name_fragments.append(f'{args_predict.network}__{args_predict.trainer}__{args.plans}')
         _predict(args_predict)
 
     # Combine results
