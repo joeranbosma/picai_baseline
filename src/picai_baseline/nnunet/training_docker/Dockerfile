@@ -49,7 +49,7 @@ COPY nnUNetTrainerV2_SwinUNETR.py /tmp/nnUNetTrainerV2_SwinUNETR.py
 RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
     mv /tmp/nnUNetTrainerV2_SwinUNETR.py "$SITE_PKG/nnunet/training/network_training/nnUNetTrainerV2_SwinUNETR.py"
 
-COPY swin_unetr.py /tmp/monai_swinunetr.py
+COPY monai_swinunetr.py /tmp/monai_swinunetr.py
 RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
     mv /tmp/monai_swinunetr.py "$SITE_PKG/nnunet/network_architecture/monai_swinunetr.py"
 
