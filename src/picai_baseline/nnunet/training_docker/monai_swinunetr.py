@@ -50,6 +50,7 @@ class SwinUNETR(SegmentationNetwork):
         use_checkpoint: bool = False,
         spatial_dims: int = 3,
         patch_size: Union[int, Sequence[int], Sequence[Sequence[int]]] = 2,
+        final_nonlin: nn.Module = None,
     ) -> None:
         """
         Args:
@@ -117,6 +118,7 @@ class SwinUNETR(SegmentationNetwork):
             raise ValueError("feature_size should be divisible by 12.")
 
         self.normalize = normalize
+        self.final_nonlin = final_nonlin
 
         self.swinViT = SwinTransformer(
             in_chans=in_channels,
@@ -303,6 +305,8 @@ class SwinUNETR(SegmentationNetwork):
         out = self.decoder1(dec0, enc0)
         logits = self.out(out)
         print(f"forward logits of shape {logits.shape}")
+        if self.final_nonlin is not None:
+            logits = self.final_nonlin(logits)
         return logits
 
 

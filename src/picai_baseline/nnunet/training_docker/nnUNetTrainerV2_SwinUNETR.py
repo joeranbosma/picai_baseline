@@ -28,7 +28,7 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
         self.net_num_pool_op_kernel_sizes = ((2, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2), (1, 2, 2))
         print(f"Set downsampling sizes to {self.net_num_pool_op_kernel_sizes}")
 
-        model = SwinUNETR(
+        self.network = SwinUNETR(
             img_size=self.patch_size,  # e.g., [ 16 320 320]
             in_channels=self.num_input_channels,
             out_channels=self.num_classes,
@@ -43,20 +43,14 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
             # normalize: bool = True,
             # use_checkpoint: bool = False,
             # spatial_dims: int = 3,
+            final_nonlin=torch.nn.Softmax(dim=1),
         )
-
-        if torch.cuda.is_available():
-            device = torch.device("cuda")
-        elif torch.backends.mps.is_available():
-            device = torch.device("mps")
-        else:
-            print("GPU is not available!")
-            device = torch.device("cpu")
-
-        print(f"Network initialized, moving to {device}")
-        self.network = model.to(device)
-        print(f"Network is now on {self.network.get_device()}")
 
         # disable deep supervision
         self.network._deep_supervision = False
         self.network.do_ds = False
+
+        if torch.cuda.is_available():
+            self.network.cuda()
+
+        print(f"Network is now on {self.network.get_device()}")
