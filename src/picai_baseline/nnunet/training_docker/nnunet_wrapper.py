@@ -8,6 +8,7 @@ import subprocess
 import sys
 from collections import OrderedDict
 from copy import deepcopy
+import functools
 from pathlib import Path
 
 import numpy as np
@@ -19,6 +20,7 @@ from nnunet.utilities.io import (checksum, path_exists, read_json,
                                  refresh_file_list, write_json)
 
 PLANS = 'nnUNetPlansv2.1'
+print = functools.partial(print, flush=True)
 
 
 class CustomizedCarbonTracker:
