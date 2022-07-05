@@ -91,7 +91,7 @@ class SwinUNETR(SegmentationNetwork):
         else:
             # patch size is the full specification of downsampling steps
             self.patch_size = patch_size
-        
+
         # verify input image size is compatible with patch sizes
         for i in range(spatial_dims):
             downsample_factors = [patch_size[i] for patch_size in self.patch_size]
@@ -316,7 +316,7 @@ def window_partition(x, window_size):
         x: input tensor.
         window_size: local window size.
     """
-    x_shape = x.size()
+    x_shape = [int(s) for s in x.shape]
     if len(x_shape) == 5:
         b, d, h, w, c = x_shape
         x = x.view(
@@ -333,7 +333,7 @@ def window_partition(x, window_size):
             x.permute(0, 1, 3, 5, 2, 4, 6, 7).contiguous().view(-1, window_size[0] * window_size[1] * window_size[2], c)
         )
     elif len(x_shape) == 4:
-        b, h, w, c = x.shape
+        b, h, w, c = [int(s) for s in x.shape]
         x = x.view(b, h // window_size[0], window_size[0], w // window_size[1], window_size[1], c)
         windows = x.permute(0, 1, 3, 2, 4, 5).contiguous().view(-1, window_size[0] * window_size[1], c)
     return windows
@@ -482,7 +482,7 @@ class WindowAttention(nn.Module):
         self.softmax = nn.Softmax(dim=-1)
 
     def forward(self, x, mask):
-        b, n, c = x.shape
+        b, n, c = [int(s) for s in x.shape]
         qkv = self.qkv(x).reshape(b, n, 3, self.num_heads, c // self.num_heads).permute(2, 0, 3, 1, 4)
         q, k, v = qkv[0], qkv[1], qkv[2]
         q = q * self.scale
@@ -493,7 +493,7 @@ class WindowAttention(nn.Module):
         relative_position_bias = relative_position_bias.permute(2, 0, 1).contiguous()
         attn = attn + relative_position_bias.unsqueeze(0)
         if mask is not None:
-            nw = mask.shape[0]
+            nw = [int(s) for s in mask.shape][0]
             attn = attn.view(b // nw, nw, self.num_heads, n, n) + mask.unsqueeze(1).unsqueeze(0)
             attn = attn.view(-1, self.num_heads, n, n)
             attn = self.softmax(attn)
@@ -569,27 +569,27 @@ class SwinTransformerBlock(nn.Module):
         self.mlp = Mlp(hidden_size=dim, mlp_dim=mlp_hidden_dim, act=act_layer, dropout_rate=drop, dropout_mode="swin")
 
     def forward_part1(self, x, mask_matrix):
-        x_shape = x.size()
+        x_shape = [int(s) for s in x.shape]
         x = self.norm1(x)
         if len(x_shape) == 5:
-            b, d, h, w, c = x.shape
+            b, d, h, w, c = [int(s) for s in x.shape]
             window_size, shift_size = get_window_size((d, h, w), self.window_size, self.shift_size)
             pad_l = pad_t = pad_d0 = 0
             pad_d1 = (window_size[0] - d % window_size[0]) % window_size[0]
             pad_b = (window_size[1] - h % window_size[1]) % window_size[1]
             pad_r = (window_size[2] - w % window_size[2]) % window_size[2]
             x = F.pad(x, (0, 0, pad_l, pad_r, pad_t, pad_b, pad_d0, pad_d1))
-            _, dp, hp, wp, _ = x.shape
+            _, dp, hp, wp, _ = [int(s) for s in x.shape]
             dims = [b, dp, hp, wp]
 
         elif len(x_shape) == 4:
-            b, h, w, c = x.shape
+            b, h, w, c = [int(s) for s in x.shape]
             window_size, shift_size = get_window_size((h, w), self.window_size, self.shift_size)
             pad_l = pad_t = 0
             pad_r = (window_size[0] - h % window_size[0]) % window_size[0]
             pad_b = (window_size[1] - w % window_size[1]) % window_size[1]
             x = F.pad(x, (0, 0, pad_l, pad_r, pad_t, pad_b))
-            _, hp, wp, _ = x.shape
+            _, hp, wp, _ = [int(s) for s in x.shape]
             dims = [b, hp, wp]
 
         if any(i > 0 for i in shift_size):
@@ -702,7 +702,7 @@ class PatchMerging(nn.Module):
 
     def forward(self, x):
 
-        x_shape = x.size()
+        x_shape = [int(s) for s in x.shape]
         if len(x_shape) == 5:
             if tuple(self.patch_size) == (2, 2, 2):
                 b, d, h, w, c = x_shape
@@ -859,7 +859,7 @@ class BasicLayer(nn.Module):
             )
 
     def forward(self, x):
-        x_shape = x.size()
+        x_shape = [int(s) for s in x.shape]
         if len(x_shape) == 5:
             b, c, d, h, w = x_shape
             window_size, shift_size = get_window_size((d, h, w), self.window_size, self.shift_size)
@@ -961,7 +961,7 @@ class SwinTransformer(nn.Module):
                 depth=depths[i_layer],
                 num_heads=num_heads[i_layer],
                 window_size=self.window_size,
-                drop_path=dpr[sum(depths[:i_layer]) : sum(depths[: i_layer + 1])],
+                drop_path=dpr[sum(depths[:i_layer]): sum(depths[: i_layer + 1])],
                 mlp_ratio=mlp_ratio,
                 qkv_bias=qkv_bias,
                 drop=drop_rate,
@@ -983,7 +983,7 @@ class SwinTransformer(nn.Module):
 
     def proj_out(self, x, normalize=False):
         if normalize:
-            x_shape = x.size()
+            x_shape = [int(s) for s in x.shape]
             if len(x_shape) == 5:
                 n, ch, d, h, w = x_shape
                 x = rearrange(x, "n c d h w -> n d h w c")
