@@ -25,7 +25,7 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
         """Initialize SwinUNETR network"""
         print("Overwriting network to SwinUNETR")
 
-        self.net_num_pool_op_kernel_sizes = ((2, 2, 2), (2, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2))
+        self.net_num_pool_op_kernel_sizes = ((2, 2, 2), (2, 2, 2), (2, 2, 2), (1, 2, 2), (1, 2, 2))
         print(f"Set downsampling sizes to {self.net_num_pool_op_kernel_sizes}")
 
         model = SwinUNETR(
