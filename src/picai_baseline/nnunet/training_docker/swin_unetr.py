@@ -289,6 +289,7 @@ class SwinUNETR(SegmentationNetwork):
             )
 
     def forward(self, x_in):
+        print(f"forward with input of shape {x_in.shape}")
         hidden_states_out = self.swinViT(x_in, self.normalize)
         enc0 = self.encoder1(x_in)
         enc1 = self.encoder2(hidden_states_out[0])
@@ -301,6 +302,7 @@ class SwinUNETR(SegmentationNetwork):
         dec0 = self.decoder2(dec1, enc1)
         out = self.decoder1(dec0, enc0)
         logits = self.out(out)
+        print(f"forward logits of shape {logits.shape}")
         return logits
 
 
