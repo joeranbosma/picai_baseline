@@ -137,3 +137,4 @@ tests/metrics.json
 *.model.pkl
 plans.pkl
 src/picai_baseline/nnunet/split_cv_cases.py
+.vscode/
