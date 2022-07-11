@@ -40,12 +40,12 @@ else:
     workdir = Path("/workdir")
 
 # settings
-task = "Task2201_picai_baseline"
+task = "Task101_test"
 
 # paths
 mha_archive_dir = inputdir / "images"
 annotations_dir = inputdir / "labels/csPCa_lesion_delineations/human_expert/resampled/"
-mha2nnunet_settings_path = workdir / "mha2nnunet_settings" / "Task2201_picai_baseline.json"
+mha2nnunet_settings_path = workdir / "mha2nnunet_settings" / f"{task}.json"
 nnUNet_raw_data_path = workdir / "nnUNet_raw_data"
 nnUNet_task_dir = nnUNet_raw_data_path / task
 nnUNet_dataset_json_path = nnUNet_task_dir / "dataset.json"
