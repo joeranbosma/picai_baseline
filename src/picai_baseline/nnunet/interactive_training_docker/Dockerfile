@@ -5,4 +5,6 @@ RUN apt-get update && \
 
 RUN pip3 install jupyter
 
+WORKDIR /workdir
+
 ENTRYPOINT /bin/bash /scripts/interactive_script.sh
