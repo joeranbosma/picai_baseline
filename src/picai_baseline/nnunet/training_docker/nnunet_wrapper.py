@@ -248,7 +248,7 @@ def plan_train(argv):
             cmd = [
                 'nnUNet_plan_and_preprocess',
                 '-t', taskid,
-                '-tl', '4', '-tf', '4',
+                '-tl', '12', '-tf', '12',
                 '--verify_dataset_integrity'
             ]
             if args.planner2d == "None" and '2d' not in args.network:
