@@ -119,7 +119,6 @@ class SwinUNETR(SegmentationNetwork):
 
         self.normalize = normalize
         self.final_nonlin = final_nonlin
-        self.debug_num_calls = 100
 
         self.swinViT = SwinTransformer(
             in_chans=in_channels,
@@ -292,12 +291,6 @@ class SwinUNETR(SegmentationNetwork):
             )
 
     def forward(self, x_in):
-        if self.debug_num_calls > 0:
-            with torch.no_grad():
-                x_shape = list(x_in.detach().cpu().shape)
-                print(f"forward with input of shape {x_shape}")
-                self.debug_num_calls -= 1
-
         hidden_states_out = self.swinViT(x_in, self.normalize)
         enc0 = self.encoder1(x_in)
         enc1 = self.encoder2(hidden_states_out[0])
@@ -310,14 +303,8 @@ class SwinUNETR(SegmentationNetwork):
         dec0 = self.decoder2(dec1, enc1)
         out = self.decoder1(dec0, enc0)
         logits = self.out(out)
-        with torch.no_grad():
-            lgts = logits.detach().cpu().numpy()
-            print(f"From network: {np.mean(lgts):.4f} ± {np.std(lgts):.4f}. NaN: {np.sum(np.isnan(lgts))}")
         if self.final_nonlin is not None:
             logits = self.final_nonlin(logits)
-            with torch.no_grad():
-                lgts = logits.detach().cpu().numpy()
-                print(f"After nonlinearty: {np.mean(lgts):.4f} ± {np.std(lgts):.4f}")
         return logits
 
 
