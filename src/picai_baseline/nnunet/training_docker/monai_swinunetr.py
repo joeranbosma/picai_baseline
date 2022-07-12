@@ -293,8 +293,9 @@ class SwinUNETR(SegmentationNetwork):
 
     def forward(self, x_in):
         if self.debug_num_calls > 0:
-            print(f"forward with input of shape {x_in.shape}")
-            self.debug_num_calls -= 1
+            with torch.no_grad():
+                print(f"forward with input of shape {x_in.shape}")
+                self.debug_num_calls -= 1
 
         hidden_states_out = self.swinViT(x_in, self.normalize)
         enc0 = self.encoder1(x_in)
