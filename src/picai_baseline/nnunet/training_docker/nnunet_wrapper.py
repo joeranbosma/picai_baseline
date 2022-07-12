@@ -233,15 +233,13 @@ def plan_train(argv):
                           " from the present split, this is not permitted")
                     return
 
-            if args.plan_only:
+            if args.plan_only or (prepdir / args.task).exists():
                 print(f'[#] Found plans and preprocessed data for {args.task} - nothing to do')
             else:
-                print(f'[#] Found plans and preprocessed data for {args.task}')
-                if not os.path.exists(prepdir / args.task):
-                    print(f'[#] Found plans and preprocessed data for {args.task} - copying to compute node')
-                    prepdir.mkdir(parents=True, exist_ok=True)
-                    shutil_sol.copytree(taskdir, prepdir / args.task)
-                    print(f'[#] Found plans and preprocessed data for {args.task} - copied to compute node')
+                print(f'[#] Found plans and preprocessed data for {args.task} - copying to compute node')
+                prepdir.mkdir(parents=True, exist_ok=True)
+                shutil_sol.copytree(taskdir, prepdir / args.task)
+                print(f'[#] Found plans and preprocessed data for {args.task} - copied to compute node')
         else:
             # Plans and data not available yet, run preprocessing
             print('[#] Creating plans and preprocessing data')
@@ -278,10 +276,11 @@ def plan_train(argv):
                     pickle.dump(splits, fp)
                 shutil_sol.copyfile(args.custom_split, splits_file.with_suffix('.json'))
 
-            # Copy preprocessed data to storage server
-            print('[#] Copying plans and preprocessed data from compute node to storage server')
-            taskdir.parent.mkdir(parents=True, exist_ok=True)
-            shutil_sol.copytree(prepdir / args.task, taskdir)
+            if taskdir.absolute() != (prepdir / args.task).absolute():
+                # Copy preprocessed data to storage server
+                print('[#] Copying plans and preprocessed data from compute node to storage server')
+                taskdir.parent.mkdir(parents=True, exist_ok=True)
+                shutil_sol.copytree(prepdir / args.task, taskdir)
 
         if args.plan_only:
             return
