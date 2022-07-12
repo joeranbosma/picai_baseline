@@ -294,7 +294,7 @@ class SwinUNETR(SegmentationNetwork):
     def forward(self, x_in):
         if self.debug_num_calls > 0:
             with torch.no_grad():
-                x_shape = list(x_in.detatch().cpu().shape)
+                x_shape = list(x_in.detach().cpu().shape)
                 print(f"forward with input of shape {x_shape}")
                 self.debug_num_calls -= 1
 
