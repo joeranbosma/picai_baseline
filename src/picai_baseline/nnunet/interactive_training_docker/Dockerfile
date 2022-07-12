@@ -1,14 +1,10 @@
 FROM joeranbosma/picai_swinnnunetr:latest
 
-USER root
-
 RUN apt-get update && \
       apt-get -y install sudo
 
 RUN pip3 install jupyter jupyter_contrib_nbextensions
-RUN jupyter contrib nbextension install --user
-
-USER user
+RUN jupyter contrib nbextension install
 
 WORKDIR /
 
