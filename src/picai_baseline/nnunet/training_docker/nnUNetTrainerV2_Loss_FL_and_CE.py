@@ -12,12 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+from nnunet.training.loss_functions.crossentropy import RobustCrossEntropyLoss
+from nnunet.training.loss_functions.focal_loss import FocalLossV2
+from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from nnunet.utilities.nd_softmax import softmax_helper
 from torch import nn
 
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from nnunet.training.loss_functions.crossentropy import RobustCrossEntropyLoss
-from nnunet.utilities.nd_softmax import softmax_helper
-from nnunet.training.loss_functions.focal_loss import FocalLossV2
 
 class FL_and_CE_loss(nn.Module):
     def __init__(self, fl_kwargs=None, ce_kwargs=None, alpha=0.5, aggregate="sum"):

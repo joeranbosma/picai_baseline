@@ -33,6 +33,10 @@ COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -r /tmp/requirements.txt
 
 # copy custom files to nnUNet folder
+COPY focal_loss.py /tmp/focal_loss.py
+RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
+    mv /tmp/focal_loss.py "$SITE_PKG/nnunet/training/loss_functions/focal_loss.py"
+
 COPY nnUNetTrainerV2_focalLoss.py /tmp/nnUNetTrainerV2_focalLoss.py
 RUN SITE_PKG=`pip3 show nnunet | grep "Location:" | awk '{print $2}'` && \
     mv /tmp/nnUNetTrainerV2_focalLoss.py "$SITE_PKG/nnunet/training/network_training/nnUNet_variants/loss_function/nnUNetTrainerV2_focalLoss.py"
