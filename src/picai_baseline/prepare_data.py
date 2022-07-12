@@ -74,6 +74,7 @@ else:
         archive_dir=mha_archive_dir,
         annotations_dir=annotations_dir,
         output_path=mha2nnunet_settings_path,
+        task=task
     )
 
     # read mha2nnunet_settings
