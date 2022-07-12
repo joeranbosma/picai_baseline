@@ -10,6 +10,6 @@ RUN jupyter contrib nbextension install --user
 
 USER user
 
-WORKDIR /workdir/
+WORKDIR /
 
 ENTRYPOINT /bin/bash /scripts/interactive_script.sh
