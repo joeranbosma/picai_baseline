@@ -308,12 +308,14 @@ class SwinUNETR(SegmentationNetwork):
         dec0 = self.decoder2(dec1, enc1)
         out = self.decoder1(dec0, enc0)
         logits = self.out(out)
-        lgts = logits.detach().cpu().numpy()
-        print(f"From network: {np.mean(lgts):.4f} ± {np.std(lgts):.4f}")
+        with torch.no_grad():
+            lgts = logits.detach().cpu().numpy()
+            print(f"From network: {np.mean(lgts):.4f} ± {np.std(lgts):.4f}. NaN: {np.sum(np.isnan(lgts))}")
         if self.final_nonlin is not None:
             logits = self.final_nonlin(logits)
-            lgts = logits.detach().cpu().numpy()
-            print(f"After nonlinearty: {np.mean(lgts):.4f} ± {np.std(lgts):.4f}")
+            with torch.no_grad():
+                lgts = logits.detach().cpu().numpy()
+                print(f"After nonlinearty: {np.mean(lgts):.4f} ± {np.std(lgts):.4f}")
         return logits
 
 
