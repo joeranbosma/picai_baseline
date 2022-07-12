@@ -43,7 +43,7 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
             # normalize: bool = True,
             # use_checkpoint: bool = False,
             # spatial_dims: int = 3,
-            final_nonlin=torch.nn.Softmax(dim=1),
+            # final_nonlin=torch.nn.Softmax(dim=1),
         )
 
         # disable deep supervision
