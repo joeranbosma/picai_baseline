@@ -236,18 +236,19 @@ def plan_train(argv):
             if args.plan_only:
                 print(f'[#] Found plans and preprocessed data for {args.task} - nothing to do')
             else:
-                print(f'[#] Found plans and preprocessed data for {args.task} - copying to compute node')
+                print(f'[#] Found plans and preprocessed data for {args.task}')
                 if not os.path.exists(prepdir / args.task):
+                    print(f'[#] Found plans and preprocessed data for {args.task} - copying to compute node')
                     prepdir.mkdir(parents=True, exist_ok=True)
                     shutil_sol.copytree(taskdir, prepdir / args.task)
-                print(f'[#] Found plans and preprocessed data for {args.task} - copied to compute node')
+                    print(f'[#] Found plans and preprocessed data for {args.task} - copied to compute node')
         else:
             # Plans and data not available yet, run preprocessing
             print('[#] Creating plans and preprocessing data')
             cmd = [
                 'nnUNet_plan_and_preprocess',
                 '-t', taskid,
-                '-tl', '1', '-tf', '1',
+                '-tl', '4', '-tf', '4',
                 '--verify_dataset_integrity'
             ]
             if args.planner2d == "None" and '2d' not in args.network:
@@ -567,6 +568,18 @@ def checkout(argv):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) == 1:
+        # add debug parameters to run the script with debug mode
+        os.environ['prepdir'] = "/Users/joeranbosma/picai/workdir/nnUNet_preprocessed"
+        sys.argv.extend([
+            'plan_train',
+            'Task101_test',
+            '/Users/joeranbosma/picai/workdir/',
+            '--trainer=nnUNetTrainerV2_SwinUNETR',
+            '--fold=0',
+            '--use_compressed_data'
+        ])
+
     # Very first argument determines action
     actions = {
         'prepare': prepare,

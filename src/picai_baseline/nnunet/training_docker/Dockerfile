@@ -5,7 +5,7 @@ RUN groupadd -r user && useradd -m --no-log-init -r -g user user
 
 # Configuration
 RUN echo "PYTHONUNBUFFERED=1" >> /etc/environment && \
-    echo "OMP_NUM_THREADS=1" >> /etc/environment
+    echo "OMP_NUM_THREADS=4" >> /etc/environment
 
 # Install a few dependencies that are not automatically installed, plus nnU-net
 RUN apt-get update && \
