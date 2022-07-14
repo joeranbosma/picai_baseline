@@ -19,6 +19,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--task', type=str, default="Task2201_picai_baseline")
 parser.add_argument('--trainer', type=str, default='nnUNetTrainerV2_Loss_FL_and_CE_checkpoints')
 parser.add_argument('--results', type=str, default="/workdir/results/nnUNet/3d_fullres/")
+parser.add_argument('--checkpoints', type=str, nargs="+", default="model_best")
 parser.add_argument('-f', '--folds', type=int, nargs="+", default=(0, 1, 2, 3, 4))
 parser.add_argument('--softmax_dir_prefix', type=str, default="picai_pubtrain_predictions_")
 args = parser.parse_args()
@@ -29,14 +30,8 @@ task = args.task
 
 for fold in args.folds:
     print(f"Fold {fold}")
-    if fold == 0:
-        checkpoints = ["model_best", "model_final_checkpoint"] + [
-            f"model_ep_{epoch:03d}" for epoch in range(50, 950+1, 50)
-        ]
-    else:
-        checkpoints = ["model_best"]
 
-    for checkpoint in checkpoints:
+    for checkpoint in args.checkpoints:
         softmax_dir = results_dir / task / trainer / f"fold_{fold}/{args.softmax_dir_prefix}{checkpoint}"
         if not softmax_dir.exists():
             softmax_dir = results_dir / task / trainer / f"{args.softmax_dir_prefix}{checkpoint}_f{fold}"
