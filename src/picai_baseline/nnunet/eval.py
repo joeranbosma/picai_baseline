@@ -25,7 +25,7 @@ parser.add_argument('--softmax_dir_prefix', type=str, default="picai_pubtrain_pr
 args = parser.parse_args()
 
 results_dir = Path(args.results)
-trainer = (args.trainer + "_nnUNetPlansv2.1")
+trainer = (args.trainer + "__nnUNetPlansv2.1")
 task = args.task
 
 for fold in args.folds:
