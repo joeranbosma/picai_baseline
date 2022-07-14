@@ -35,6 +35,10 @@ for fold in args.folds:
         softmax_dir = results_dir / task / trainer / f"fold_{fold}/{args.softmax_dir_prefix}{checkpoint}"
         if not softmax_dir.exists():
             softmax_dir = results_dir / task / trainer / f"{args.softmax_dir_prefix}{checkpoint}_f{fold}"
+        if not softmax_dir.exists():
+            raise ValueError(f"Could not find softmax directory {softmax_dir}")
+        else:
+            print(f"Found softmax directory with {len(list(softmax_dir.glob('*.*')))} files")
         metrics_path = softmax_dir.parent  / f"metrics-{checkpoint}.json"
 
         if metrics_path.exists():
