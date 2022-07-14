@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 from picai_baseline.splits.picai_nnunet import valid_splits
@@ -14,11 +15,19 @@ def extract_lesion_candidates_compatibility(pred):
     return nnUNet_cropped_prediction_compatibility(extract_lesion_candidates(pred)[0])
 
 
-task = "Task2201_picai_baseline"
-trainer = "nnUNetTrainerV2_Loss_FL_and_CE_checkpoints__nnUNetPlansv2.1"
-results_dir = Path("/workdir/results/nnUNet/3d_fullres/")
+parser = argparse.ArgumentParser()
+parser.add_argument('-t', '--task', type=str, default="Task2201_picai_baseline")
+parser.add_argument('--trainer', type=str, default='nnUNetTrainerV2_Loss_FL_and_CE_checkpoints')
+parser.add_argument('--results', type=str, default="/workdir/results/nnUNet/3d_fullres/")
+parser.add_argument('-f', '--folds', type=int, nargs="+", default=(0, 1, 2, 3, 4))
+parser.add_argument('--softmax_dir_prefix', type=str, default="picai_pubtrain_predictions_")
+args = parser.parse_args()
 
-for fold in range(5):
+results_dir = Path(args.results)
+trainer = (args.trainer + "_nnUNetPlansv2.1")
+task = args.task
+
+for fold in args.folds:
     print(f"Fold {fold}")
     if fold == 0:
         checkpoints = ["model_best", "model_final_checkpoint"] + [
@@ -28,7 +37,7 @@ for fold in range(5):
         checkpoints = ["model_best"]
 
     for checkpoint in checkpoints:
-        softmax_dir = results_dir / task / trainer / f"fold_{fold}/picai_pubtrain_predictions_{checkpoint}"
+        softmax_dir = results_dir / task / trainer / f"fold_{fold}/{args.softmax_dir_prefix}{checkpoint}"
         metrics_path = softmax_dir.parent  / f"metrics-{checkpoint}.json"
 
         if metrics_path.exists():
