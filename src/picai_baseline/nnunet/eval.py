@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from picai_baseline.splits.picai_nnunet import valid_splits
+from picai_baseline.splits.picai_nnunet import train_splits
 from picai_eval import evaluate_folder
 from picai_prep.preprocessing import crop_or_pad
 from report_guided_annotation import extract_lesion_candidates
@@ -39,7 +39,7 @@ for fold in args.folds:
             raise ValueError(f"Could not find softmax directory {softmax_dir}")
         else:
             print(f"Found softmax directory with {len(list(softmax_dir.glob('*.*')))} files")
-        metrics_path = softmax_dir.parent  / f"metrics-{checkpoint}.json"
+        metrics_path = softmax_dir.parent  / f"metrics-train-{checkpoint}.json"
 
         if metrics_path.exists():
             print(f"Metrics found at {metrics_path}, skipping..")
@@ -49,7 +49,7 @@ for fold in args.folds:
         metrics = evaluate_folder(
             y_det_dir=softmax_dir,
             y_true_dir=f"/workdir/nnUNet_raw_data/{task}/labelsTr",
-            subject_list=valid_splits[fold]['subject_list'],
+            subject_list=train_splits[fold]['subject_list'],
             y_det_postprocess_func=extract_lesion_candidates_compatibility,
             y_true_postprocess_func=nnUNet_cropped_prediction_compatibility,
         )
