@@ -38,6 +38,8 @@ for fold in args.folds:
 
     for checkpoint in checkpoints:
         softmax_dir = results_dir / task / trainer / f"fold_{fold}/{args.softmax_dir_prefix}{checkpoint}"
+        if not softmax_dir.exists():
+            softmax_dir = results_dir / task / trainer / f"{args.softmax_dir_prefix}{checkpoint}_f{fold}"
         metrics_path = softmax_dir.parent  / f"metrics-{checkpoint}.json"
 
         if metrics_path.exists():
