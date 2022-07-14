@@ -50,8 +50,9 @@ class nnUNetTrainerV2_SwinUNETR(nnUNetTrainerV2_noDeepSupervision):
         self.network._deep_supervision = False
         self.network.do_ds = False
 
-        # set conv_op to tell nnU-Net network is 3D
+        # set conv_op and num_classes for 3D inference with nnU-Net
         self.network.conv_op = torch.nn.Conv3d
+        self.network.num_classes = self.num_classes
 
         if torch.cuda.is_available():
             self.network.cuda()
